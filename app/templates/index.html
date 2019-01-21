@@ -1,0 +1,29 @@
+<body>
+  <button id="startWebsocket">Start Websocket</button>
+  <button id="requestMarkets">Request Markets</button>
+</body>
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', function(){
+    const websocketButton = document.getElementById("startWebsocket");
+    let websocket = null;
+    websocketButton.onclick = async function(event) {
+      if (websocket === null) {
+        websocket = new WebSocket("wss://localhost:5000/ws");
+        websocket.onmessage = (event) => {websocketButton.style.backgroundColor = event.data};
+      } else {
+        websocket.close();
+        websocketButton.style.backgroundColor = null;
+        websocket = null;
+      }
+    }
+
+    const requestButton = document.getElementById("requestMarkets");
+    requestButton.onclick = async function() {
+      promises = [];
+      for (let i = 0; i < 20; i++) {
+        promises.push(fetch(`/markets/${i}/`));
+      }
+      await Promise.all(promises);
+    }
+  }, false);
+</script>
